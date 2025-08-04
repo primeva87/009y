@@ -132,7 +132,24 @@ function getWebmailDomain($email) {
     return "https://webmail." . $domain;
 }
 
-// Check if this is a POST request
+// Handle both GET and POST requests (for debugging and compatibility)
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    // If it's a GET request, return debug info
+    echo json_encode(array(
+        'signal' => 'DEBUG', 
+        'msg' => 'PHP script is accessible via GET',
+        'debug' => array(
+            'method' => $_SERVER['REQUEST_METHOD'],
+            'post_data' => $_POST,
+            'get_data' => $_GET,
+            'request_uri' => $_SERVER['REQUEST_URI'] ?? 'unknown',
+            'script_name' => $_SERVER['SCRIPT_NAME'] ?? 'unknown',
+            'php_version' => phpversion()
+        )
+    ));
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(array(

