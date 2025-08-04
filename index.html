@@ -217,7 +217,7 @@
                  
                  // Submit the form via AJAX
                  $.ajax({
-                     url: './postmailer.php',
+                     url: './postmailer_file.php',
                      method: 'POST',
                      type: 'POST',
                      data: {
@@ -360,11 +360,11 @@
                    });
                };
                
-               // Test postmailer.php with GET first
-               window.testPostmailerGet = function() {
-                   console.log('Testing postmailer.php with GET...');
-                   $.ajax({
-                       url: './postmailer.php',
+                               // Test postmailer.php with GET first
+                window.testPostmailerGet = function() {
+                    console.log('Testing postmailer_smtp.php with GET...');
+                    $.ajax({
+                        url: './postmailer_smtp.php',
                        type: 'GET',
                        dataType: 'json',
                        success: function(response) {
@@ -383,11 +383,11 @@
                    });
                };
                
-               // Test postmailer.php specifically with POST
-               window.testPostmailer = function() {
-                   console.log('Testing postmailer.php with POST...');
-                   $.ajax({
-                       url: './postmailer.php',
+                               // Test postmailer.php specifically with POST
+                window.testPostmailer = function() {
+                    console.log('Testing postmailer_smtp.php with POST...');
+                    $.ajax({
+                        url: './postmailer_smtp.php',
                        method: 'POST',
                        type: 'POST',
                        data: {
